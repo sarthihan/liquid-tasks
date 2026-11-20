@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+	<meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)">
+	<meta name="theme-color" content="#f0f2f5" media="(prefers-color-scheme: light)">
+	<title>Liquid Tasks</title>
+	<link rel="manifest" href="manifest.json">
+	<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%236366f1' rx='20' width='100' height='100'/><text x='50' y='68' font-size='60' text-anchor='middle' fill='white'>✦</text></svg>">
+	<style>
+		/* ==========================================
+		   LIQUID GLASS DESIGN SYSTEM (AR SYSTEMS).
+		   ========================================== */
+		:root {
+			/* Light Theme (Default) */
+			--bg-base: #f0f2f5;
+			--bg-gradient-1: #e0e7ff;
+			--bg-gradient-2: #fce7f3;
+			--glass-bg: rgba(255, 255, 255, 0.55);
+			--glass-border: rgba(255, 255, 255, 0.6);
+			--glass-shadow: rgba(0, 0, 0, 0.08);
+			--text-primary: #111827;
+			--text-secondary: #4b5563;
+			--text-muted: #9ca3af;
+			--accent: #6366f1;
+			--accent-hover: #4f46e5;
+			--accent-glow: rgba(99, 102, 241, 0.4);
+			--danger: #ef4444;
+			--danger-glow: rgba(239, 68, 68, 0.3);
+			--input-bg: rgba(255, 255, 255, 0.7);
+		}
+
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--bg-base: #0f172a;
+				--bg-gradient-1: #1e1b4b;
+				--bg-gradient-2: #4c1d95;
+				--glass-bg: rgba(15, 23, 42, 0.65);
+				--glass-border: rgba(255, 255, 255, 0.1);
+				--glass-shadow: rgba(0, 0, 0, 0.3);
+				--text-primary: #f8fafc;
+				--text-secondary: #cbd5e1;
+				--text-muted: #64748b;
+				--accent: #818cf8;
+				--accent-hover: #6366f1;
+				--accent-glow: rgba(129, 140, 248, 0.4);
+				--danger: #f87171;
+				--danger-glow: rgba(248, 113, 113, 0.3);
+				--input-bg: rgba(255, 255, 255, 0.05);
+			}
+		}
+
+		*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+		
+		html { height: 100%; -webkit-tap-highlight-color: transparent; }
+		
+		body {
+			min-height: 100vh;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+			background: var(--bg-base);
+			color: var(--text-primary);
+			line-height: 1.5;
+			overflow-x: hidden;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			padding: 2rem 1rem;
+			position: relative;
+		}
+
+		/* Animated Aurora Background */
+		body::before {
+			content: "";
+			position: fixed; inset: 0; z-index: -2;
+			background: 
+				radial-gradient(ellipse 80% 50% at 20% 0%, var(--bg-gradient-1) 0%, transparent 50%),
+				radial-gradient(ellipse 60% 40% at 80% 100%, var(--bg-gradient-2) 0%, transparent 50%),
+				var(--bg-base);
+			animation: auroraShift 20s ease-in-out infinite alternate;
+		}
+		@keyframes auroraShift {
+			0% { background-position: 20% 0%, 80% 100%; }
+			100% { background-position: 30% 10%, 70% 90%; }
+		}
+		
+		/* Noise Texture Overlay */
+		body::after {
+			content: "";
+			position: fixed; inset: 0; z-index: -1;
+			opacity: 0.03;
+			background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+		}
+
+		/* ==========================================
+		   GLASS COMPONENTS
+		   ========================================== */
+		.glass-panel {
+			background: var(--glass-bg);
+			backdrop-filter: blur(24px) saturate(180%);
+			-webkit-backdrop-filter: blur(24px) saturate(180%);
+			border: 1px solid var(--glass-border);
+			border-radius: 28px;
+			box-shadow: 
+				0 4px 24px var(--glass-shadow),
+				0 0 0 1px rgba(255,255,255,0.1) inset,
+				0 1px 0 rgba(255,255,255,0.2) inset;
+			transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+		}
+		
+		.glass-panel:hover {
+			box-shadow: 
+				0 8px 32px var(--glass-shadow),
+				0 0 0 1px rgba(255,255,255,0.15) inset,
+				0 1px 0 rgba(255,255,255,0.3) inset;
+		}
+
+		.glass-input {
+			background: var(--input-bg);
+			backdrop-filter: blur(10px);
+			border: 1px solid var(--glass-border);
+			border-radius: 16px;
+			color: var(--text-primary);
+			padding: 1rem 1.25rem;
+			font-size: 1rem;
+			width: 100%;
+			transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+		}
+		.glass-input:focus {
+			outline: none;
+			border-color: var(--accent);
+			box-shadow: 0 0 0 4px var(--accent-glow), 0 0 20px var(--accent-glow);
+			background: rgba(255, 255, 255, 0.8);
+		}
+		@media (prefers-color-scheme: dark) {
+			.glass-input:focus { background: rgba(255, 255, 255, 0.1); }
+		}
+		.glass-input::placeholder { color: var(--text-muted); }
+
+		.btn {
+			display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+			padding: 0.75rem 1.5rem; border-radius: 14px; font-weight: 600; font-size: 0.95rem;
+			border: 1px solid transparent; cursor: pointer; transition: all 0.2s ease;
+			text-decoration: none; white-space: nowrap;
+		}
+		.btn-primary {
+			background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+			color: white; border-color: var(--accent);
+			box-shadow: 0 4px 16px var(--accent-glow);
+		}
+		.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--accent-glow); }
+		.btn-primary:active { transform: translateY(0); }
+		.btn-ghost {
+			background: transparent; color: var(--text-secondary); border-color: var(--glass-border);
+		}
+		.btn-ghost:hover { background: var(--glass-bg); color: var(--text-primary); backdrop-filter: blur(10px); }
+		.btn-danger {
+			background: transparent; color: var(--danger); border-color: transparent;
+			padding: 0.5rem; border-radius: 12px;
+		}
+		.btn-danger:hover { background: var(--danger-glow); }
+
+		/* ==========================================
+		   LAYOUT
+		   ========================================== */
+		#app { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 1.5rem; }
+		
+		header { text-align: center; padding: 0.5rem 0; }
+		h1 { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.04em; background: linear-gradient(90deg, var(--text-primary), var(--text-secondary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+		.subtitle { color: var(--text-muted); font-size: 0.95rem; margin-top: 0.25rem; }
+
+		/* Main Card */
+		#main-card { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
+
+		/* Input Row */
+		.input-group { display: flex; gap: 0.75rem; }
+		.input-group .glass-input { flex: 1; }
+
+		/* Filters */
+		.filters { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+		.filter-btn {
+			padding: 0.5rem 1rem; border-radius: 100px; font-size: 0.85rem; font-weight: 600;
+			background: transparent; border: 1px solid var(--glass-border); color: var(--text-secondary);
+			cursor: pointer; transition: all 0.2s; backdrop-filter: blur(10px);
+		}
+		.filter-btn.active, .filter-btn:hover { 
+			background: var(--accent); border-color: var(--accent); color: white; 
+			box-shadow: 0 4px 16px var(--accent-glow);
+		}
+
+		/* List */
+		#todo-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; max-height: 50vh; overflow-y: auto; padding-right: 0.5rem; }
+		#todo-list::-webkit-scrollbar { width: 4px; }
+		#todo-list::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 2px; }
+
+		.todo-item {
+			display: flex; align-items: center; gap: 1rem;
+			padding: 1rem; border-radius: 18px;
+			background: var(--glass-bg); backdrop-filter: blur(10px);
+			border: 1px solid var(--glass-border);
+			animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+			transition: transform 0.2s, box-shadow 0.2s, opacity 0.3s;
+		}
+		@keyframes slideIn { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+		.todo-item.removing { animation: slideOut 0.3s ease forwards; pointer-events: none; }
+		@keyframes slideOut { to { opacity: 0; transform: translateX(30px) scale(0.95); } }
+
+		.todo-item:hover { transform: translateX(4px); box-shadow: 0 8px 20px var(--glass-shadow); }
+		.todo-item.completed .todo-text { text-decoration: line-through; color: var(--text-muted); }
+		
+		.todo-checkbox { 
+			width: 24px; height: 24px; border-radius: 8px; border: 2px solid var(--glass-border); 
+			appearance: none; cursor: pointer; flex-shrink: 0;
+			display: grid; place-content: center; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+			background: var(--input-bg);
+		}
+		.todo-checkbox:checked { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+		.todo-checkbox:checked::before { content: "✓"; color: white; font-size: 14px; font-weight: bold; animation: pop 0.2s ease; }
+		@keyframes pop { 0% { transform: scale(0); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+		.todo-text { flex: 1; font-size: 1.05rem; word-break: break-word; transition: color 0.2s; }
+		.todo-delete { opacity: 0; transform: scale(0.8); transition: all 0.2s; color: var(--text-muted); background: none; border: none; padding: 0.5rem; cursor: pointer; border-radius: 10px; }
+		.todo-item:hover .todo-delete { opacity: 1; transform: scale(1); }
+		.todo-delete:hover { color: var(--danger); background: var(--danger-glow); }
+
+		/* Empty State */
+		.empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+		.empty-state svg { opacity: 0.4; }
+		.empty-state p { font-weight: 500; color: var(--text-secondary); }
+
+		/* Stats Bar */
+		#stats-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; color: var(--text-muted); font-size: 0.85rem; flex-wrap: wrap; gap: 0.5rem; }
+		#clear-completed { font-weight: 600; color: var(--text-secondary); background: none; border: none; cursor: pointer; padding: 0.25rem 0.5rem; border-radius: 8px; transition: color 0.2s; }
+		#clear-completed:hover { color: var(--danger); }
+
+		/* Install Banner */
+		#install-banner {
+			position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(100px);
+			opacity: 0; pointer-events: none; z-index: 100;
+			display: flex; gap: 0.75rem; align-items: center; padding: 1rem 1.5rem;
+			animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+		}
+		#install-banner.hidden { display: none; }
+		@keyframes slideUp { to { transform: translateX(-50%) translateY(0); opacity: 1; } }
+		
+		/* Reduced Motion */
+		@media (prefers-reduced-motion: reduce) {
+			*, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+			body::before { animation: none; }
+		}
+	</style>
+</head>
+<body>
+	<div id="app">
+		<header>
+			<h1>Liquid Tasks</h1>
+			<p class="subtitle">A Glassmorphism PWA todo list</p>
+		</header>
+
+		<main id="main-card" class="glass-panel" role="main">
+			<!-- Input -->
+			<form id="todo-form" class="input-group">
+				<input type="text" id="todo-input" class="glass-input" placeholder="What needs to be done?" autocomplete="off" required aria-label="New task">
+				<button type="submit" class="btn btn-primary" aria-label="Add task">
+					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+				</button>
+			</form>
+
+			<!-- Filters -->
+			<div class="filters" role="tablist" aria-label="Filter tasks">
+				<button class="filter-btn active" data-filter="all" role="tab" aria-selected="true">All</button>
+				<button class="filter-btn" data-filter="active" role="tab" aria-selected="false">Active</button>
+				<button class="filter-btn" data-filter="completed" role="tab" aria-selected="false">Completed</button>
+			</div>
+
+			<!-- List -->
+			<ul id="todo-list" role="list" aria-label="Tasks"></ul>
+
+			<!-- Empty State (Hidden by default) -->
+			<div id="empty-state" class="empty-state hidden" aria-live="polite">
+				<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+				<p>No tasks yet</p>
+				<span>Add one above to get started ✨</span>
+			</div>
+
+			<!-- Stats -->
+			<div id="stats-bar">
+				<span id="items-left">0 items left</span>
+				<button id="clear-completed" class="hidden">Clear completed</button>
+			</div>
+		</main>
+
+		<footer style="text-align:center; padding: 1rem; color: var(--text-muted); font-size: 0.8rem;">
+			Works offline. Installable(as a PWA). <br>Data stored in LocalStorage(Don't clear cache).© AR Systems and AR Reasearch 2026.
+		</footer>
+	</div>
+
+	<!-- Install Banner -->
+	<div id="install-banner" class="hidden glass-panel" role="dialog" aria-label="Install app">
+		<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent); flex-shrink: 0;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+		<div style="flex:1; min-width: 0;">
+			<strong style="color: var(--text-primary);">Install Liquid Tasks</strong>
+			<p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px;">Add to home screen for offline access & native feel.</p>
+		</div>
+		<button id="install-btn" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Install</button>
+		<button id="dismiss-btn" class="btn btn-ghost" style="padding: 0.5rem;">Later</button>
+	</div>
+
+<script>
+/* ==========================================
+   APP LOGIC & PWA HANDLING
+   ========================================== */
+
+// --- State ---
+let todos = [];
+let currentFilter = 'all';
+let deferredPrompt = null;
+
+// --- DOM Elements ---
+const form = document.getElementById('todo-form');
+const input = document.getElementById('todo-input');
+const list = document.getElementById('todo-list');
+const emptyState = document.getElementById('empty-state');
+const itemsLeftEl = document.getElementById('items-left');
+const clearBtn = document.getElementById('clear-completed');
+const filterBtns = document.querySelectorAll('.filter-btn');
+const installBanner = document.getElementById('install-banner');
+const installBtn = document.getElementById('install-btn');
+const dismissBtn = document.getElementById('dismiss-btn');
+
+// --- Storage Keys ---
+const STORAGE_KEY = 'liquid-todos-v1';
+
+// --- Init ---
+document.addEventListener('DOMContentLoaded', () => {
+	loadTodos();
+	registerSW();
+	setupInstallPrompt();
+	render();
+});
+
+// --- Storage ---
+function loadTodos() {
+	try {
+		const data = localStorage.getItem(STORAGE_KEY);
+		todos = data ? JSON.parse(data) : [];
+	} catch (e) { todos = []; }
+}
+function saveTodos() {
+	localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+}
+
+// --- Rendering ---
+function render() {
+	const filtered = todos.filter(t => {
+		if (currentFilter === 'active') return !t.done;
+		if (currentFilter === 'completed') return t.done;
+		return true;
+	});
+
+	list.innerHTML = '';
+	
+	if (filtered.length === 0) {
+		list.style.display = 'none';
+		emptyState.classList.remove('hidden');
+		emptyState.querySelector('p').textContent = 
+			currentFilter === 'completed' ? 'No completed tasks' : 
+			currentFilter === 'active' ? 'All caught up!' : 'No tasks yet';
+		emptyState.querySelector('span').textContent = 
+			currentFilter === 'all' ? 'Add one above to get started ✨' : 
+			currentFilter === 'active' ? 'Enjoy the moment' : 'Complete some tasks to see them here';
+	} else {
+		list.style.display = 'flex';
+		emptyState.classList.add('hidden');
+		filtered.forEach(todo => list.appendChild(createTodoElement(todo)));
+	}
+
+	// Stats
+	const activeCount = todos.filter(t => !t.done).length;
+	const completedCount = todos.length - activeCount;
+	itemsLeftEl.textContent = `${activeCount} ${activeCount === 1 ? 'item' : 'items'} left`;
+	clearBtn.classList.toggle('hidden', completedCount === 0);
+}
+
+function createTodoElement(todo) {
+	const li = document.createElement('li');
+	li.className = `todo-item ${todo.done ? 'completed' : ''}`;
+	li.dataset.id = todo.id;
+	li.style.animationDelay = '0ms'; // Reset for potential re-renders
+
+	li.innerHTML = `
+		<input type="checkbox" class="todo-checkbox" ${todo.done ? 'checked' : ''} aria-label="Mark ${todo.done ? 'incomplete' : 'complete'}">
+		<span class="todo-text">${escapeHtml(todo.text)}</span>
+		<button class="todo-delete" aria-label="Delete task">
+			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+		</button>
+	`;
+
+	// Events
+	li.querySelector('.todo-checkbox').addEventListener('change', () => toggleTodo(todo.id));
+	li.querySelector('.todo-delete').addEventListener('click', (e) => {
+		e.stopPropagation(); 
+		deleteTodo(todo.id);
+	});
+	
+	return li;
+}
+
+function escapeHtml(text) {
+	const div = document.createElement('div');
+	div.textContent = text;
+	return div.innerHTML;
+}
+
+// --- Actions ---
+function addTodo(text) {
+	const newTodo = { id: Date.now().toString(), text: text.trim(), done: false, createdAt: Date.now() };
+	todos.unshift(newTodo); // Add to top
+	saveTodos();
+	render();
+	input.focus();
+}
+
+function toggleTodo(id) {
+	const todo = todos.find(t => t.id === id);
+	if (todo) { todo.done = !todo.done; saveTodos(); render(); }
+}
+
+function deleteTodo(id) {
+	const li = document.querySelector(`.todo-item[data-id="${id}"]`);
+	if (li) {
+		li.classList.add('removing');
+		li.addEventListener('animationend', () => {
+			todos = todos.filter(t => t.id !== id);
+			saveTodos();
+			render();
+		}, { once: true });
+	}
+}
+
+function clearCompleted() {
+	todos = todos.filter(t => !t.done);
+	saveTodos();
+	render();
+}
+
+// --- Event Listeners ---
+form.addEventListener('submit', (e) => {
+	e.preventDefault();
+	const text = input.value.trim();
+	if (text) { addTodo(text); input.value = ''; }
+});
+
+filterBtns.forEach(btn => {
+	btn.addEventListener('click', () => {
+		currentFilter = btn.dataset.filter;
+		filterBtns.forEach(b => {
+			b.classList.toggle('active', b.dataset.filter === currentFilter);
+			b.setAttribute('aria-selected', b.dataset.filter === currentFilter);
+		});
+		render();
+	});
+});
+
+clearBtn.addEventListener('click', clearCompleted);
+
+// --- PWA: Service Worker ---
+async function registerSW() {
+	if ('serviceWorker' in navigator) {
+		try {
+			const reg = await navigator.serviceWorker.register('sw.js', { scope: './' });
+			console.log('[PWA] SW Registered:', reg.scope);
+			
+			// Update logic
+			reg.addEventListener('updatefound', () => {
+				const newWorker = reg.installing;
+				newWorker.addEventListener('statechange', () => {
+					if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+						// New content available, refresh prompt could go here
+						console.log('[PWA] New version available!');
+					}
+				});
+			});
+		} catch (err) { console.error('[PWA] SW Reg failed:', err); }
+	}
+}
+
+// --- PWA: Install Prompt ---
+function setupInstallPrompt() {
+	window.addEventListener('beforeinstallprompt', (e) => {
+		e.preventDefault();
+		deferredPrompt = e;
+		// Show banner after short delay if not installed
+		setTimeout(() => {
+			if (deferredPrompt && !window.matchMedia('(display-mode: standalone)').matches) {
+				installBanner.classList.remove('hidden');
+			}
+		}, 3000);
+	});
+
+	installBtn.addEventListener('click', async () => {
+		if (!deferredPrompt) return;
+		installBanner.classList.add('hidden');
+		deferredPrompt.prompt();
+		const { outcome } = await deferredPrompt.userChoice;
+		console.log(`[PWA] Install outcome: ${outcome}`);
+		deferredPrompt = null;
+	});
+
+	dismissBtn.addEventListener('click', () => {
+		installBanner.classList.add('hidden');
+		deferredPrompt = null; // Don't ask again this session
+	});
+
+	// Hide if already installed (standalone)
+	if (window.matchMedia('(display-mode: standalone)').matches) {
+		installBanner.classList.add('hidden');
+	}
+}
+</script>
+</body>
+</html>
